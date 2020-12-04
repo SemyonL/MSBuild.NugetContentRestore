@@ -46,6 +46,7 @@ namespace MSBuild.NugetContentRestore.Tasks
         /// </summary>
         public bool EnableSmartRestore { get; set; } = true;
 
+        public bool CopyRootContentFiles { get; set; }
 
         public string ConfigFileFullPath
         {
@@ -100,6 +101,14 @@ namespace MSBuild.NugetContentRestore.Tasks
 
                     Log.LogMessage(MessageImportance.High, "NugetContentRestore :: {0} :: {1} :: Restoring content files", package.FolderName, folder);
                     sourceFolderInfo.CopyTo(Path.Combine(ProjectDir, folder), true, filePatterns.ToArray(), EnableSmartRestore);
+                }
+
+                if (CopyRootContentFiles)
+                {
+                    var sourceFolderInfo = new DirectoryInfo(packageContentsFullPath);
+
+                    Log.LogMessage(MessageImportance.High, "NugetContentRestore :: {0} :: {1} :: Restoring content files", package.FolderName, "Content files in the root");
+                    sourceFolderInfo.CopyTo(ProjectDir, false, filePatterns.ToArray(), EnableSmartRestore);
                 }
 
                 // Restore Package Content for additional folders (AdditionalFolder)
